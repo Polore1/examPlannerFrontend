@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importă useNavigate
-import { fetchCourses } from "../../api/api"; // Importă funcția de obținere a cursurilor
-import Navbar from "../../components/Navbar"
+import { useNavigate } from "react-router-dom";
+import { fetchCourses } from "../../api/api";
+import navigateWithError from "../../utils/navigateWithError"; 
 import "./Courses.css";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();  // Folosește useNavigate pentru a naviga
+  const [isLoading, setIsLoading] = useState(true); // ✅ pentru afișare "Se încarcă..."
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
-      setError("⚠️ Autentificare necesară.");
+      navigateWithError(navigate, "⚠️ Autentificare necesară.", "Token lipsă");
       return;
     }
 
@@ -21,49 +22,59 @@ const Courses = () => {
       .then((data) => {
         setCourses(data);
         setFilteredCourses(data);
+        setIsLoading(false); // ✅ gata încărcarea
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => {
+        setIsLoading(false); // ✅ și în caz de eroare
+        navigateWithError(navigate, err.message, "Eroare la încărcarea cursurilor");
+      });
   }, []);
 
-  // Funcție pentru a naviga la detalii curs
   const handleViewDetails = (courseId) => {
-    navigate(`/courses/${courseId}`);  // Folosește navigate pentru a naviga
+    navigate(`/courses/${courseId}`);
   };
 
   return (
     <div className="home-container">
-      <Navbar />
-      {/* Tabelul Cursurilor */}
-      <table className="courses-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nume</th>
-            <th>An studiu</th>
-            <th>Specializare</th>
-            <th>Examinare</th>
-            {/* <th>Actiuni</th> */}
-          </tr>
-        </thead>
-        <tbody>
-          {filteredCourses.map((course) => (
-            <tr
-              key={course.id}
-              onClick={() => handleViewDetails(course.id)} // Clic pentru a naviga la detalii
-              className="clickable-row"
-            >
-              <td>{course.id}</td>
-              <td>{course.name}</td>
-              <td>{course.study_year}</td>
-              <td>{course.specialization}</td>
-              <td>{course.examination_method}</td>
-              {/* <td>
-                <button onClick={() => handleEditClick(course.id, course.examination_method)}>Editează</button>
-              </td> */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {isLoading ? (
+        <p>Se încarcă cursurile...</p>
+      ) : (
+        <>
+          <div className="courses-header">
+            <h2>Cursuri disponibile</h2>
+            <span className="course-count">{filteredCourses.length} cursuri</span>
+          </div>
+
+          <div className="table-container">
+            <table className="courses-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nume</th>
+                  <th>An studiu</th>
+                  <th>Specializare</th>
+                  <th>Examinare</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCourses.map((course) => (
+                  <tr
+                    key={course.id}
+                    onClick={() => handleViewDetails(course.id)}
+                    className="clickable-row"
+                  >
+                    <td>{course.id}</td>
+                    <td>{course.name}</td>
+                    <td>{course.study_year}</td>
+                    <td>{course.specialization}</td>
+                    <td>{course.examination_method}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 };

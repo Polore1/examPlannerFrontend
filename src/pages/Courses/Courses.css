@@ -1,84 +1,98 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: hidden; /* doar un scroll pe pagină */
+}
+
+#root {
+  height: 100%;
+  
+}
+
 .home-container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f9;
-    color: #333;
-    padding: 2rem;
-    height: 100vh;
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem 2rem;
+  background-color: #f4f6f9;
+  box-sizing: border-box;
+}
+
+.courses-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  position: sticky;
+  top: 0;
+  background-color: #f4f6f9;
+  z-index: 10;
+  height: 60px; /* fixează înălțimea pentru calculul scrollului */
+  flex-shrink: 0;
+}
+
+.courses-header h2 {
+  font-size: 20px;
+  margin: 0;
+  color: #0044cc;
+}
+
+.course-count {
+  font-size: 18px;
+  background-color: #e6f0ff;
+  padding: 8px 15px;
+  border-radius: 20px;
+  color: #333;
   
-  .courses-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-  }
-  
-  .courses-table th,
-  .courses-table td {
-    padding: 12px;
-    text-align: left;
-    font-size: 16px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .courses-table th {
-    background-color: #0044cc;
-    color: white;
-  }
-  
-  .courses-table tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .results-count {
-    display: flex;
-    justify-content: flex-end;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    color: #555;
-  }
-  
-  /* Secțiunea de filtre */
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 20px;
-  }
-  
-  .search-input,
-  select {
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    width: auto;
-    min-width: 150px;
-  }
-  
-  .sort-button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-left: 10px;
-    min-width: 200px;
-  }
-  
-  .sort-button:hover {
-    background-color: #45a049;
-  }
-  
-  .search-input:focus,
-  select:focus,
-  .sort-button:focus {
-    border-color: #0044cc;
-    outline: none;
-  }
-  
+}
+
+/* Container scrollabil doar pentru tabel */
+.table-container {
+  flex: 1; 
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* Tabel */
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.courses-table th, .courses-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.courses-table th {
+  background-color: #0044cc;
+  color: white;
+  position: sticky;
+  top: 0; /* sticky față de containerul scrollabil */
+  z-index: 5;
+}
+
+.courses-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+.sort-button {
+  background-color: #0044cc;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.sort-button:hover {
+  background-color: #003399;
+}

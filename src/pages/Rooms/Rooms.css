@@ -1,0 +1,26 @@
+.rooms-container {
+    padding: 20px;
+  }
+  
+  .rooms-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .rooms-table th,
+  .rooms-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .rooms-table th {
+    background-color: #f0f0f0;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+  

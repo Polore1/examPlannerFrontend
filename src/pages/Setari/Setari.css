@@ -1,0 +1,215 @@
+/* Setari.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: sans-serif;
+  }
+  
+  .settings-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #0044cc;
+    margin-bottom: 20px;
+  }
+  
+  /* TABEL */
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 30px; /* spațiu între tabel și formulare */
+  }
+  
+  .period-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .period-table th,
+  .period-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .period-table th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .period-table td {
+    background-color: #ffffff;
+  }
+  
+  .period-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .period-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* FORMULARE */
+  .form-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    color: #444;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f4f6f9;
+    color: #333;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #0044cc;
+    outline: none;
+  }
+  
+  /* Butoane */
+  .submit-btn,
+  .edit-btn,
+  .delete-btn {
+    padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+  margin-right: 8px; /* distanță între butoane */
+  }
+  
+  .submit-btn {
+    background-color: #2196F3;
+    color: white;
+  }
+  
+  .submit-btn:hover {
+    background-color: #1976D2;
+  }
+  
+  .edit-btn {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .edit-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .delete-btn {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background-color: #e53935;
+  }
+  
+  /* Carduri informative */
+  .info-card {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 1rem;
+  }
+  
+  .info-card.success {
+    background-color: #e8f5e9;
+    border: 1px solid #4CAF50;
+    color: #2e7d32;
+  }
+  
+  .info-card.error {
+    background-color: #ffebee;
+    border: 1px solid #f44336;
+    color: #c62828;
+  }
+  
+  /* RESPONSIVE LAYOUT pentru formulare side-by-side */
+  @media (min-width: 768px) {
+    .form-flex-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+  
+    .form-flex-row .form-container {
+      flex: 1;
+      min-width: 300px;
+    }
+  }
+
+  /* Stil pentru mesajul de eroare la salvare */
+.submit-error {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    padding: 10px;
+    background-color: #ffe6e6; /* Fundal ușor roșu */
+    border-radius: 6px;
+    border: 1px solid red;
+  }
+  
+  /* Stil pentru butonul "Anulează Editarea" */
+  .cancel-btn {
+    background-color: #ccc;
+    color: #333;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #b3b3b3; /* Schimbă culoarea la hover */
+  }
+  

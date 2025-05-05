@@ -1,13 +1,20 @@
-import { useLocation } from "react-router-dom";
+// src/pages/ErrorPage/ErrorPage.jsx
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ErrorPage = () => {
-  const location = useLocation();  // Obține locația curentă
-  const errorMessage = location.state?.message || "A apărut o eroare necunoscută.";  // Mesajul de eroare din state
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const errorMessage = location.state?.message || "A apărut o eroare necunoscută.";
+  const errorType = location.state?.type || "Eroare generală";
 
   return (
-    <div>
-      <h1>Eroare</h1>
-      <p>{errorMessage}</p>  {/* Afișează mesajul de eroare */}
+    <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
+      <h1>❌ {errorType}</h1>
+      <p>{errorMessage}</p>
+      <button onClick={() => navigate(-1)} style={{ marginTop: "20px" }}>
+        🔙 Înapoi
+      </button>
     </div>
   );
 };

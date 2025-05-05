@@ -8,7 +8,9 @@ const CourseDetails = () => {
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [editedCourse, setEditedCourse] = useState(null);
+  const [modifiedFields, setModifiedFields] = useState({}); // urmărim câmpurile modificate
   const [error, setError] = useState(null);
+  const [userRole, setUserRole] = useState(localStorage.getItem("user_role")); // Exemplu: setăm rolul din localStorage
 
   const token = localStorage.getItem("access_token") || localStorage.getItem("token");
 
@@ -32,6 +34,12 @@ const CourseDetails = () => {
       ...prev,
       [name]: value,
     }));
+    
+    // Marchează câmpul ca modificat
+    setModifiedFields((prev) => ({
+      ...prev,
+      [name]: true,
+    }));
   };
 
   const handleAssistantsChange = (index, value) => {
@@ -41,12 +49,24 @@ const CourseDetails = () => {
       ...prev,
       assistants: newAssistants,
     }));
+
+    // Marchează câmpul asistent ca modificat
+    setModifiedFields((prev) => ({
+      ...prev,
+      assistants: true,
+    }));
   };
 
   const handleAddAssistant = () => {
     setEditedCourse((prev) => ({
       ...prev,
       assistants: [...prev.assistants, ""],
+    }));
+
+    // Marchează câmpul ca modificat
+    setModifiedFields((prev) => ({
+      ...prev,
+      assistants: true,
     }));
   };
 
@@ -55,6 +75,12 @@ const CourseDetails = () => {
     setEditedCourse((prev) => ({
       ...prev,
       assistants: newAssistants,
+    }));
+
+    // Marchează câmpul ca modificat
+    setModifiedFields((prev) => ({
+      ...prev,
+      assistants: true,
     }));
   };
 
@@ -81,19 +107,23 @@ const CourseDetails = () => {
 
   return (
     <div className="course-details-container">
-      <h2 className="course-details-title">Editați Informațiile Cursului</h2>
+      <h2 className="course-details-title">Detalii curs: {course.name}</h2>
 
-      <div>
-        <label className="input-label"><strong>Denumire:</strong></label>
-        <input
-          type="text"
-          name="name"
-          value={editedCourse.name}
-          onChange={handleInputChange}
-          className="input-field"
-        />
-      </div>
+      {/* Modificările sunt permise doar pentru SECRETARIAT (SEC) */}
+      {userRole === "SEC" && (
+        <div>
+          <label className="input-label"><strong>Denumire:</strong></label>
+          <input
+            type="text"
+            name="name"
+            value={editedCourse.name}
+            onChange={handleInputChange}
+            className={`input-field ${modifiedFields.name ? "modified" : ""}`}  // adăugăm clasa 'modified'
+          />
+        </div>
+      )}
 
+      {/* Afișează informațiile pentru toți utilizatorii (profesori și secretariat) */}
       <div>
         <label className="input-label"><strong>Coordonator:</strong></label>
         <input
@@ -101,7 +131,8 @@ const CourseDetails = () => {
           name="coordinator"
           value={editedCourse.coordinator}
           onChange={handleInputChange}
-          className="input-field"
+          className={`input-field ${modifiedFields.coordinator ? "modified" : ""}`}  // adăugăm clasa 'modified'
+          disabled={userRole !== "SEC"} // Permite editarea doar pentru SECRETARIAT
         />
       </div>
 
@@ -112,7 +143,8 @@ const CourseDetails = () => {
           name="specialization"
           value={editedCourse.specialization}
           onChange={handleInputChange}
-          className="input-field"
+          className={`input-field ${modifiedFields.specialization ? "modified" : ""}`}  // adăugăm clasa 'modified'
+          disabled={userRole !== "SEC"} // Permite editarea doar pentru SECRETARIAT
         />
       </div>
 
@@ -122,7 +154,8 @@ const CourseDetails = () => {
           name="study_year"
           value={editedCourse.study_year}
           onChange={handleInputChange}
-          className="input-field"
+          className={`input-field ${modifiedFields.study_year ? "modified" : ""}`}  // adăugăm clasa 'modified'
+          disabled={userRole !== "SEC"} // Permite editarea doar pentru SECRETARIAT
         >
           <option value={1}>1</option>
           <option value={2}>2</option>
@@ -139,17 +172,24 @@ const CourseDetails = () => {
               type="text"
               value={assistant}
               onChange={(e) => handleAssistantsChange(index, e.target.value)}
-              className="input-field"
+              className={`input-field ${modifiedFields.assistants ? "modified" : ""}`}  // adăugăm clasa 'modified'
+              disabled={userRole !== "SEC"}  // Permite editarea doar pentru SECRETARIAT
             />
-            <button onClick={() => handleRemoveAssistant(index)} className="remove-button">Șterge</button>
+            {userRole === "SEC" && (
+              <button onClick={() => handleRemoveAssistant(index)} className="remove-button">Șterge</button>
+            )}
           </div>
         ))}
-        <button onClick={handleAddAssistant} className="add-button">Adaugă asistent</button>
+        {userRole === "SEC" && (
+          <button onClick={handleAddAssistant} className="add-button">Adaugă asistent</button>
+        )}
       </div>
 
       <div className="button-container">
         <button onClick={handleBack} className="back-button">Înapoi</button>
-        <button onClick={handleSave} className="save-button">Salvează</button>
+        {userRole === "SEC" && (
+          <button onClick={handleSave} className="save-button">Salvează</button>
+        )}
       </div>
     </div>
   );

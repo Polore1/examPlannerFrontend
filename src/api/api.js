@@ -68,6 +68,23 @@ export const getPendingExams = async (token) => {
   return await res.json();
 };
 
+export const fetchRooms = async (token) => {
+  const res = await fetch(`${BASE_URL}/rooms`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+     // adaugă asta doar dacă serverul are supports_credentials=True
+  });
+
+  if (!res.ok) {
+    throw new Error("Eroare la preluarea sălilor");
+  }
+
+  return await res.json();
+};
+
 // POST: Propune o dată pentru un examen
 export const proposeExamDate = async (examId, proposedDate, token) => {
   const res = await fetch(`${BASE_URL}/exam/propose`, {
@@ -129,23 +146,30 @@ export const updateExamDate = async (examId, newDate, token) => {
   return await res.json();
 };
 
-export const setExaminationMethod = (courseId, newMethod, token) => {
-    return fetch(`/courses/${courseId}/set-examination-method`, {
+export const setExaminationMethod = async (courseId, newMethod, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/courses/${courseId}/set-examination-method`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ examination_method: newMethod }), // Trimiterea metodei de examinare
-    })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Nu s-a putut actualiza metoda de examinare');
-      }
-      return response.json();
     });
-  };
 
+    if (!response.ok) {
+      const errorDetails = await response.text(); // Prinde mesajul de eroare
+      console.error('Error response from server:', errorDetails);
+      throw new Error('Nu s-a putut actualiza metoda de examinare');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error while updating examination method:', error);
+    throw error; // Redirecționează eroarea mai departe pentru a fi gestionată
+  }
+};
 
   export const fetchCourseDetails = async (id, token) => {
     try {
@@ -186,41 +210,259 @@ export const setExaminationMethod = (courseId, newMethod, token) => {
       const data = await response.json();
       return data;
     } catch (error) {
+      console.error('Eroare la actualizarea cursului:', error);
       throw error;
     }
   };
   
   // Functia pentru a seta metoda de examinare (PUT)
-  export const updateExaminationMethod = async (courseId, examinationMethod, token) => {
+  export const updateExaminationMethod = async (courseId, newMethod, token) => {
     try {
-      const response = await fetch(`${API_URL}/courses/${courseId}/set-examination-method`, {
+      const response = await fetch(`${BASE_URL}/courses/${courseId}/set-examination-method`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ examination_method: examinationMethod }),
+        body: JSON.stringify({ examination_method: newMethod }), // Trimiterea metodei de examinare
       });
   
       if (!response.ok) {
-        throw new Error('Nu s-a putut seta metoda de examinare');
+        const errorDetails = await response.text(); // Prinde mesajul de eroare
+        console.error('Error response from server:', errorDetails);
+        throw new Error('Nu s-a putut actualiza metoda de examinare');
       }
   
       const data = await response.json();
       return data;
     } catch (error) {
-      throw error;
+      console.error('Error while updating examination method:', error);
+      throw error; // Redirecționează eroarea mai departe pentru a fi gestionată
     }
   };
 
-  export const updateCourseDetails = (courseId, updatedCourseDetails, token) => {
-    return fetch(`/api/courses/${courseId}`, {
+// Funcția pentru a actualiza detaliile unui curs
+export const updateCourseDetails = async (courseId, updatedCourseDetails, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/courses/${courseId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(updatedCourseDetails),
-    }).then(response => response.json());
-  };
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.text(); // Prinde mesajul de eroare
+      console.error('Error response from server:', errorDetails);
+      throw new Error('Nu s-au putut actualiza detaliile cursului');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error while updating course details:', error);
+    throw error; // Redirecționează eroarea mai departe pentru a fi gestionată
+  }
+};
+
+  // Exemplu de funcție pentru obținerea examenelor grupului
+  export const fetchExamsForGroup = async (token) => {
+    try {
+      const response = await fetch(`${BASE_URL}/exam/for/group`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
   
+      if (!response.ok) {
+        throw new Error(`Server răspunde cu status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Eroare API:', error);
+      throw new Error('Eroare la obținerea examenelor. Detaliu: ' + error.message);
+    }
+  };
+
+// Exemplu de funcție pentru propunerea unui examen
+export const proposeExam = async (examData, token) => {
+  if (!token) {
+    throw new Error("Tokenul lipsește. Trebuie autentificare.");
+  }
+
+  const response = await fetch(`${BASE_URL}/exam/propose`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(examData)
+  });
+
+  if (!response.ok) {
+    const errMsg = await response.json();
+    console.error("Error response from server:", errMsg);
+    throw new Error("A apărut o eroare necunoscută. Încercați din nou.");
+  }
+
+  return await response.json();
+};
+
+export const fetchExamDetails = async (examId, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/exam/${examId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 404) {
+      throw new Error('Examenul nu a fost găsit.');
+    }
+
+    if (response.status === 403) {
+      throw new Error('Acces interzis pentru acest examen.');
+    }
+
+    if (!response.ok) {
+      throw new Error(`Server răspunde cu status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Eroare API:', error);
+    throw new Error('Eroare la obținerea detaliilor examenului. Detaliu: ' + error.message);
+  }
+};
+
+//exams
+export const fetchExaminationPeriods = async (token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/settings/examination-periods`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json", // adaugă dacă backendul așteaptă
+      },
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Eroare 422 - detalii răspuns:", errorBody);
+      throw new Error("Eroare la încărcarea perioadelor");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in fetchExaminationPeriods:", error);
+    throw new Error("Eroare la încărcarea perioadelor");
+  }
+};
+
+export const deleteExaminationPeriod = async (id, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/settings/examination-periods/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Eroare la ștergere perioadă");
+    }
+
+  } catch (error) {
+    console.error("deleteExaminationPeriod Error: ", error);
+    throw error;
+  }
+};
+
+export const addExaminationPeriod = async (period, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/settings/examination-periods`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(period),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Eroare la adăugare perioadă");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("addExaminationPeriod Error: ", error);
+    throw error;
+  }
+};
+
+export const updateExaminationPeriod = async (id, period, token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/settings/examination-periods/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(period),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Eroare la actualizare perioadă");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("updateExaminationPeriod Error: ", error);
+    throw error;
+  }
+};
+
+
+export const getExaminationPeriodById = async (id, token) => {
+  const response = await fetch(`${BASE_URL}/settings/examination-periods/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Nu s-a putut găsi perioada");
+  }
+
+  return response.json();
+};
+
+export const getExamProposals = async (token) => {
+  try {
+    const response = await fetch(`${BASE_URL}/exam/proposals`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Eroare la preluarea propunerilor: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Eroare în getExamProposals:", error);
+    throw error;
+  }
+};

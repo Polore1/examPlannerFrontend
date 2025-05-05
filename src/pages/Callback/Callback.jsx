@@ -14,6 +14,7 @@ const decodeJwt = (token) => {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
 
+  console.log(jsonPayload);
   // Returnăm obiectul decodat
   return JSON.parse(jsonPayload);
 };
@@ -49,3 +50,5 @@ const Callback = () => {
 };
 
 export default Callback;
+
+

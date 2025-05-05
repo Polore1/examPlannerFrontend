@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../api/config";
+import navigateWithError from "../../utils/navigateWithError"; // Importăm funcția de navigare
 import "./Landing.css";
-import logoUsv from "../../assets/logo-usv.jpg";// Import logo-ul din assets
+import logoUsv from "../../assets/logo-usv.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -11,6 +12,17 @@ const Landing = () => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("access_token");
     const role = params.get("role");
+    const error = params.get("error");
+
+    if (error) {
+      // Navigăm la pagina de eroare dacă există un parametru de eroare
+      navigateWithError(
+        navigate,
+        `Autentificare eșuată: ${error.replace(/_/g, " ")}`,
+        "Eroare autentificare"
+      );
+      return;
+    }
 
     if (token && role) {
       localStorage.setItem("access_token", token);
