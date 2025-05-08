@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCourses, logout, getExamsForGroup } from "../../api/api";  // Folosim logout din API
 
-import Descarcare from "../Descarcare/Descarcare";
 import Setari from "../Setari/Setari";
 import Courses from "../Courses/Courses";
 import ExamDetails from '../Examene/ExamDetails';
@@ -11,11 +10,10 @@ import './Home.css';
 
 const Home = () => {
   const [courses, setCourses] = useState([]);
-  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]); // dacă filtrezi cursuri
+  const [examsForGroup, setExamsForGroup] = useState([]);     // dacă afișezi examenele pentru SG
   const [activeTab, setActiveTab] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const [examsForGroup, setExamsForGroup] = useState([]);
-  const [examId, setExamId] = useState(5);
   const [examDetails, setExamDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -89,6 +87,7 @@ const Home = () => {
       // Navigăm la pagina de login
       navigate("/");  // Navigăm la pagina de login
     } catch (err) {
+      console.log(`Logout eșuat. Încercați din nou. ${err}`);
       navigateWithError(navigate, "Logout eșuat. Încercați din nou.", "Eroare logout");
     }
   };
