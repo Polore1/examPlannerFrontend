@@ -1,0 +1,109 @@
+.examene-grupa-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem;
+  background-color: #f4f6f9;
+  box-sizing: border-box;
+}
+
+.examene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.examene-header h2 {
+  font-size: 1.6rem;
+  color: #0044cc;
+  margin: 0;
+}
+
+.exam-count {
+  font-size: 1rem;
+  background-color: #e6f0ff;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: #333;
+}
+
+/* Tabel scrollabil */
+.examene-table-container {
+  flex: 1;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.examene-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.examene-table th,
+.examene-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.examene-table th {
+  background-color: #0044cc;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.examene-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.examene-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Statusuri examene - Stiluri îmbunătățite */
+.exam-status {
+  font-weight: bold;
+  text-transform: capitalize;
+  padding: 6px 12px; /* Adăugăm un padding pentru mai mult spațiu */
+  border-radius: 8px; /* Marginile rotunjite */
+  display: inline-block; /* Se aliniază corect în celulă */
+  font-size: 1rem; /* Mărime text uniformă */
+}
+
+.exam-status.acceptat {
+  background-color: #28a745; /* Fundal verde */
+  color: black; /* Text alb */
+}
+
+.exam-status.respins {
+  background-color: #dc3545; /* Fundal roșu */
+  color: white; /* Text alb */
+}
+
+.exam-status.in_asteptare {
+  background-color: #ffc107; /* Fundal galben */
+  color: black; /* Text alb */
+}
+
+.exam-status.necunoscut {
+  background-color: #6c757d; /* Fundal gri */
+  color: black; /* Text alb */
+}
+
+@media (max-width: 768px) {
+  .examene-table th,
+  .examene-table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .examene-header h2 {
+    font-size: 1.3rem;
+  }
+}

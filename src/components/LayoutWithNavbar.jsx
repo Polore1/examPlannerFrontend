@@ -1,31 +1,42 @@
-import React, { useState, useEffect } from "react";  // Adaugă această linie pentru a importa hook-urile
-import { Outlet, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { logout } from "../api/api";  // Importă funcția logout
+import navigateWithError from "../utils/navigateWithError";
 
-const LayoutWithNavbar = ({ userRole }) => {
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState("home");
+const LayoutWithNavbar = () => {
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
 
-  // Determinăm tab-ul activ pe baza locației curente
   useEffect(() => {
-    if (location.pathname === "/courses") {
-      setActiveTab("courses");
-    } else if (location.pathname === "/home") {
-      setActiveTab("home");
-    } else if (location.pathname === "/settings") {
-      setActiveTab("settings");
-    } else if (location.pathname === "/descarcare") {
-      setActiveTab("descarcare");
+    const role = localStorage.getItem("user_role");
+    setUserRole(role);
+  }, []);
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      navigateWithError(navigate, "⚠️ Nu există un token de autentificare.", "Eroare token");
+      return;
     }
-  }, [location.pathname]);
+
+    try {
+      await logout();  // Apelează funcția logout din api.js
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+      navigate("/");
+    } catch (err) {
+      navigateWithError(navigate, "Logout eșuat. Încercați din nou.", "Eroare logout");
+    }
+  };
 
   return (
     <div>
-      {/* Transmite activeTab și setActiveTab către Navbar */}
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} userRole={userRole} />
-
-      {/* Restul conținutului paginii */}
-      <Outlet />
+      <Navbar userRole={userRole} onLogout={handleLogout} />
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 };

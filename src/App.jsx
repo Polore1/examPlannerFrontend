@@ -1,50 +1,59 @@
 import { Routes, Route } from "react-router-dom";
+
+// Pagini fără navbar
 import Landing from "./pages/Landing/Landing";
+import Callback from "./pages/Callback/Callback";
+import ErrorPage from "./pages/ErrorPage/ErrorPage";
+
+// Pagini cu navbar
 import Home from "./pages/Home/Home";
 import Courses from "./pages/Courses/Courses";
 import CourseDetails from "./pages/Courses/CourseDetails";
-import ErrorPage from "./pages/ErrorPage/ErrorPage";
-import Callback from "./pages/Callback/Callback";
-import Examene from "./pages/Examene/Examene";
-import LayoutWithNavbar from "./components/LayoutWithNavbar";
-import ExameneGrupa from "./pages/Examene/ExameneGrupa";
-import Setari from "./pages/Setari/Setari";
-import PropuneExamen from "./pages/Examene/PropuneExamen";
 import Rooms from "./pages/Rooms/Rooms";
-
-// 🔽 Importuri noi
+import ExameneInAsteptare from "./pages/Examene/ExameneInAsteptare/ExameneInAsteptare";
+import PropuneExamen from "./pages/Examene/PropuneExamen/PropuneExamen";
+import ExameneGrupa from "./pages/Examene/ExameneGrupa/ExameneGrupa";
+import Setari from "./pages/Setari/Setari";
 import AddPeriod from "./pages/Setari/AddPeriod";
 import EditPeriod from "./pages/Setari/EditPeriod";
+import Descarcare from "./pages/Descarcare/Descarcare";
+
+// Layout-uri
+import LayoutWithNavbar from "./components/LayoutWithNavbar";
+import LayoutWithoutNavbar from "./components/LayoutWithoutNavbar";
 
 function App() {
-  const userRole = "ADM"; // Poți obține rolul utilizatorului dintr-o stare sau context global
+  const userRole = "ADM"; // În viitor poate fi luat din context/autentificare
 
   return (
     <Routes>
-      {/* Pagina Landing fără navbar */}
-      <Route path="/" element={<Landing />} />
+      {/* Layout fără navbar */}
+      <Route element={<LayoutWithoutNavbar />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth/callback" element={<Callback />} />
+        <Route path="/error" element={<ErrorPage />} />
+      </Route>
 
-      {/* Pagina de callback (pentru autentificare) */}
-      <Route path="/auth/callback" element={<Callback />} />
-
-      {/* Rute protejate care includ Navbar */}
+      {/* Layout cu navbar */}
       <Route element={<LayoutWithNavbar userRole={userRole} />}>
         <Route path="/home" element={<Home />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
-        <Route path="/exams" element={<Examene />} />
-        <Route path="/exam/propose" element={<PropuneExamen />} />
-        <Route path="/examene-grupa" element={<ExameneGrupa />} />
         <Route path="/rooms" element={<Rooms />} />
-        
-        {/* Rute pentru Setări */}
+
+        {/* Examene */}
+        <Route path="/exams/pending" element={<ExameneInAsteptare />} />
+        <Route path="/exam/propose" element={<PropuneExamen />} />
+        <Route path="/exams/group" element={<ExameneGrupa />} />
+
+        {/* Setări */}
         <Route path="/settings" element={<Setari />} />
         <Route path="/settings/adaugare" element={<AddPeriod />} />
         <Route path="/settings/editare/:id" element={<EditPeriod />} />
-      </Route>
 
-      {/* Pagina de eroare */}
-      <Route path="/error" element={<ErrorPage />} />
+        {/* Descarcare (dacă ai) */}
+        <Route path="/descarcare" element={<Descarcare/>} />
+      </Route>
     </Routes>
   );
 }

@@ -96,3 +96,44 @@ html, body {
 .sort-button:hover {
   background-color: #003399;
 }
+.examination-btn.active {
+  background-color: #4CAF50; /* Culoare verde pentru butonul activ */
+  color: white;
+}
+
+.examination-btn {
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  background-color: #f1f1f1;
+}
+
+.examination-btn:hover {
+  background-color: #ddd;
+}
+.saving-text {
+  font-style: italic;
+  color: #888;
+}
+.courses-table select {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  color:black;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.courses-table select:hover {
+  border-color: #888;
+}
+
+.courses-table select:focus {
+  outline: none;
+  border-color: #0044cc;
+  box-shadow: 0 0 0 2px rgba(0, 68, 204, 0.2);
+}

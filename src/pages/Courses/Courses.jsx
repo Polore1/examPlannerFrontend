@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCourses } from "../../api/api";
-import navigateWithError from "../../utils/navigateWithError"; 
+import { fetchCourses, setExaminationMethod } from "../../api/api";
+import navigateWithError from "../../utils/navigateWithError";
 import "./Courses.css";
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // ✅ pentru afișare "Se încarcă..."
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState("");
+  const [savingCourseId, setSavingCourseId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -18,20 +20,40 @@ const Courses = () => {
       return;
     }
 
+    const role = localStorage.getItem("user_role"); // presupunem că e deja salvat
+    setUserRole(role);
+
     fetchCourses(token)
       .then((data) => {
         setCourses(data);
         setFilteredCourses(data);
-        setIsLoading(false); // ✅ gata încărcarea
+        setIsLoading(false);
       })
       .catch((err) => {
-        setIsLoading(false); // ✅ și în caz de eroare
+        setIsLoading(false);
         navigateWithError(navigate, err.message, "Eroare la încărcarea cursurilor");
       });
   }, []);
 
   const handleViewDetails = (courseId) => {
     navigate(`/courses/${courseId}`);
+  };
+
+  const handleExaminationChange = async (courseId, newMethod) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      setSavingCourseId(courseId);
+      await setExaminationMethod(courseId, newMethod, token);
+      setFilteredCourses((prev) =>
+        prev.map((c) =>
+          c.id === courseId ? { ...c, examination_method: newMethod } : c
+        )
+      );
+    } catch (err) {
+      navigateWithError(navigate, err.message, "Eroare la salvarea metodei");
+    } finally {
+      setSavingCourseId(null);
+    }
   };
 
   return (
@@ -67,7 +89,30 @@ const Courses = () => {
                     <td>{course.name}</td>
                     <td>{course.study_year}</td>
                     <td>{course.specialization}</td>
-                    <td>{course.examination_method}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {userRole === "CD" || userRole === "SEC" ? (
+                        savingCourseId === course.id ? (
+                          <span className="saving-text">Se salvează...</span>
+                        ) : (
+
+                          <select
+                              value={course.examination_method || ""}
+                              onChange={(e) => handleExaminationChange(course.id, e.target.value)}
+                            >
+                              {(!course.examination_method || course.examination_method === "") && (
+                                <option value="" disabled>
+                                    
+                                </option>
+                              )}
+                              <option value="EXAMEN">EXAMEN</option>
+                              <option value="COLOCVIU">COLOCVIU</option>
+                            </select>
+
+                        )
+                      ) : (
+                        course.examination_method
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

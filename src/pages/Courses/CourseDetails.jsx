@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchCourseDetails, updateCourse } from "../../api/api";
+import { fetchCourseDetails, updateCourseDetails } from "../../api/api";
 import './CourseDetails.css';
 
 const CourseDetails = () => {
@@ -86,7 +86,7 @@ const CourseDetails = () => {
 
   const handleSave = async () => {
     try {
-      await updateCourse(course.course_id, editedCourse, token);
+      await updateCourseDetails(course.course_id, editedCourse, token);
       setCourse(editedCourse);
 
       const confirmReturn = window.confirm("Modificările au fost salvate cu succes! Apasă OK pentru a reveni la lista de cursuri.");

@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCourses, logout, fetchExamsForGroup, proposeExam } from "../../api/api";
-import { fetchExamDetails } from "../../api/api"; 
+import { fetchCourses, logout, getExamsForGroup } from "../../api/api";  // Folosim logout din API
+
 import Descarcare from "../Descarcare/Descarcare";
-import Examene from "../Examene/Examene";
 import Setari from "../Setari/Setari";
 import Courses from "../Courses/Courses";
-import ExamDetails from '../Examene/ExamDetails'; 
-import navigateWithError from "../../utils/navigateWithError"; 
-import ExamPropose from "../Examene/PropuneExamen"
+import ExamDetails from '../Examene/ExamDetails';
+import navigateWithError from "../../utils/navigateWithError";
 import './Home.css';
 
 const Home = () => {
@@ -17,11 +15,37 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [examsForGroup, setExamsForGroup] = useState([]);
-  const [examId, setExamId] = useState(5); 
-  const [examDetails, setExamDetails] = useState(null); 
-  const [loading, setLoading] = useState(false); 
+  const [examId, setExamId] = useState(5);
+  const [examDetails, setExamDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Funcție pentru a verifica dacă token-ul este expirat
+  const checkTokenExpiration = (token) => {
+    const decoded = JSON.parse(atob(token.split('.')[1])); // decodifică JWT-ul
+    const expirationTime = decoded.exp * 1000; // timestamp-ul expirării în milisecunde
+    return Date.now() > expirationTime; // Returnează true dacă token-ul a expirat
+  };
+
+  // Funcție pentru a extrage datele (cursuri, examene, etc.)
+  const fetchData = async (token, role) => {
+    try {
+      if (role !== "SG") {
+        const coursesData = await fetchCourses(token);
+        setCourses(coursesData);
+        setFilteredCourses(coursesData);
+      }
+
+      if (role === "SG") {
+        const examsData = await getExamsForGroup(token);
+        setExamsForGroup(examsData);
+      }
+    } catch (err) {
+      navigateWithError(navigate, err.message, "Eroare la încărcarea datelor");
+    }
+  };
+
+  // useEffect pentru a încărca datele atunci când componenta este montată
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
@@ -32,107 +56,108 @@ const Home = () => {
       return;
     }
 
-    if (role !== "SG") {
-      fetchCourses(token)
-        .then((data) => {
-          setCourses(data);
-          setFilteredCourses(data);
-        })
-        .catch((err) => {
-          navigateWithError(navigate, err.message, "Eroare la încărcarea cursurilor");
-        });
+    if (checkTokenExpiration(token)) {
+      navigateWithError(navigate, "⚠️ Token expirat, te rugăm să te autentifici din nou.", "Token Expirat");
+      return;
     }
+
+    fetchData(token, role);
   }, [navigate]);
 
-  const getExamsForGroup = () => {
+  const handleLogout = async () => {
     const token = localStorage.getItem("access_token");
-    fetchExamsForGroup(token)
-      .then((data) => {
-        setExamsForGroup(data); 
-      })
-      .catch((err) => {
-        navigateWithError(navigate, err.message, "Eroare la încărcarea examenelor");
-      });
+  
+    if (!token) {
+      navigateWithError(navigate, "⚠️ Nu există un token de autentificare.", "Eroare token");
+      return;
+    }
+  
+    // Verificăm dacă token-ul este expirat
+    if (checkTokenExpiration(token)) {
+      navigateWithError(navigate, "⚠️ Token expirat, te rugăm să te autentifici din nou.", "Token Expirat");
+      return;
+    }
+  
+    try {
+      // Apelăm logout din API
+      await logout();  // Aici se va apela funcția de logout definită în API
+  
+      // Eliminăm token-ul și rolul din localStorage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+  
+      // Navigăm la pagina de login
+      navigate("/");  // Navigăm la pagina de login
+    } catch (err) {
+      navigateWithError(navigate, "Logout eșuat. Încercați din nou.", "Eroare logout");
+    }
   };
+  
 
-  const getExamDetails = (examId) => {
-    const token = localStorage.getItem("access_token");
-    setLoading(true); 
-    fetchExamDetails(examId, token)
-      .then((data) => {
-        setExamDetails(data); 
-        setLoading(false); 
-      })
-      .catch((err) => {
-        setLoading(false);
-        navigateWithError(navigate, err.message, "Eroare la încărcarea examenului");
-      });
-  };
+  // Determină ce tab-uri să afișezi pe baza rolului
+  const renderTabs = () => {
+    switch (userRole) {
+      case "ADM":
+        return (
+          <>
+            <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
+            <button className="tab-button" onClick={() => navigate("/descarcare")}>Descarcare fisiere</button>
+            <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
+          </>
+        );
 
-  const proposeNewExam = (examDetails) => {
-    const token = localStorage.getItem("access_token");
-    proposeExam(token, examDetails)
-      .then((response) => {
-        alert("Examen propus cu succes!");
-      })
-      .catch((err) => {
-        navigateWithError(navigate, err.message, "Eroare la propunerea examenului");
-      });
-  };
-
-  const handleLogout = () => {
-    logout()
-      .then(() => {
-        window.location.href = "/";
-      })
-      .catch(() => {
-        navigateWithError(navigate, "Logout eșuat.", "Eroare logout");
-      });
+      case "SEC":
+        return (
+          <>
+            <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fișiere</button>
+            <button className="tab-button" onClick={() => navigate("/rooms")}>Vizualizare sali de clasa</button>
+            <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
+            <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
+          </>
+        );
+      case "SG":
+        return (
+          <>
+            <button className="tab-button" onClick={() => navigate("/exam/propose")}>Propune Examen</button>
+            <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
+            <button className="tab-button" onClick={() => navigate("/exams/group")}>Vizualizare examene grupa</button>
+          </>
+        );
+      case "CD":
+        return (
+          <>
+            <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
+            <button className="tab-button" onClick={() => navigate("/exams/pending")}>Examene in asteptare</button>
+            <button className="tab-button" onClick={() => navigate("/exam/review")}>Revizuire examene</button>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="home-container">
-      {!activeTab && (
+      {!activeTab ? (
         <>
           <h1>Bine ai venit!</h1>
           <div className="tab-menu">
-            {userRole !== "SG" && (
-              <>
-                <button className="tab-button" onClick={() => navigate("/exams")}>Adaugă Examene</button>
-                <button className="tab-button" onClick={() => setActiveTab("descarcare")}>Descarcare fisiere</button>
-                <button className="tab-button" onClick={() => navigate("/rooms")}>Vizualizare sali de clasa</button>
-                <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
-              </>
-            )}
-
-            {userRole === "SG" && (
-              <>
-                <button className="tab-button" onClick={getExamsForGroup}>Examenele Grupei</button>
-                <button className="tab-button" onClick={() => navigate("/exam/propose")}> Propune Examen</button>
-              </>
-            )}
-
-            <button className="tab-button" onClick={() =>  navigate("/settings")}>Setări</button>
-
+            {renderTabs()}
             <button className="logout-button" onClick={handleLogout}>Logout</button>
           </div>
         </>
-      )}
+      ) : null}
 
       <div className="tab-content">
         {loading && <div>Se încarcă detaliile examenului...</div>}
+        {examDetails && !loading && <ExamDetails details={examDetails} />}
         
-        {examDetails && !loading && (
-          <ExamDetails details={examDetails} /> 
-        )}
-
         {activeTab === "courses" && (
           <Courses courses={courses} setFilteredCourses={setFilteredCourses} />
         )}
-
-        {activeTab === "exams" && userRole === "SEC" && <Examene />}
+        
         {activeTab === "settings" && (userRole === "ADM" || userRole === "SEC") && <Setari />}
-        {activeTab === "descarcare" && (userRole === "ADM" || userRole === "SEC") && <Descarcare />}
+        
       </div>
     </div>
   );

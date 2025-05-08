@@ -1,6 +1,6 @@
 // ExamDetails.jsx
 import React, { useState, useEffect } from 'react';
-import { fetchExamDetails } from '../../api/api'; // Importă funcția din api.js
+import { getExamDetails } from '../../api/api'; // Importă funcția din api.js
 
 const ExamDetails = ({ examId, token }) => {
   const [examDetails, setExamDetails] = useState(null);
@@ -10,7 +10,7 @@ const ExamDetails = ({ examId, token }) => {
   useEffect(() => {
     const getExamDetails = async () => {
       try {
-        const details = await fetchExamDetails(examId, token);
+        const details = await getExamDetails(examId, token);
         setExamDetails(details);
         setLoading(false);
       } catch (error) {
