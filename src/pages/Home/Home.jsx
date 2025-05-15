@@ -28,11 +28,11 @@ const Home = () => {
   // Funcție pentru a extrage datele (cursuri, examene, etc.)
   const fetchData = async (token, role) => {
     try {
-      if (role !== "SG") {
-        const coursesData = await fetchCourses(token);
-        setCourses(coursesData);
-        setFilteredCourses(coursesData);
-      }
+      // if (role !== "SG") {
+      //   const coursesData = await fetchCourses(token);
+      //   setCourses(coursesData);
+      //   setFilteredCourses(coursesData);
+      // }
 
       if (role === "SG") {
         const examsData = await getExamsForGroup(token);
@@ -99,8 +99,9 @@ const Home = () => {
       case "ADM":
         return (
           <>
-            <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
-            <button className="tab-button" onClick={() => navigate("/descarcare")}>Descarcare fisiere</button>
+            {/* <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button> */}
+            {/* <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button> */}
+            <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fisiere</button>
             <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
           </>
         );
@@ -108,10 +109,15 @@ const Home = () => {
       case "SEC":
         return (
           <>
-            <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fișiere</button>
-            <button className="tab-button" onClick={() => navigate("/rooms")}>Vizualizare sali de clasa</button>
+            
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
+            <button className="tab-button" onClick={() => navigate("/rooms")}>Vizualizare sali de clasa</button>
+            <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button>
+            
+            <button className="tab-button" onClick={() => navigate("/exam/for/group")}>Examene</button>
+            <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fișiere</button>
             <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
+            
           </>
         );
       case "SG":
@@ -120,6 +126,7 @@ const Home = () => {
             <button className="tab-button" onClick={() => navigate("/exam/propose")}>Propune Examen</button>
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
             <button className="tab-button" onClick={() => navigate("/exams/group")}>Vizualizare examene grupa</button>
+            {/* <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button> */}
           </>
         );
       case "CD":
@@ -128,6 +135,7 @@ const Home = () => {
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
             <button className="tab-button" onClick={() => navigate("/exams/pending")}>Examene in asteptare</button>
             <button className="tab-button" onClick={() => navigate("/exam/review")}>Revizuire examene</button>
+            <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button>
           </>
         );
       default:

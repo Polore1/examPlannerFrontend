@@ -159,3 +159,8 @@ body {
   margin-top: 15px;
   text-align: center;
 }
+.section-description {
+  margin-bottom: 10px;
+  color: #555;
+  font-style: italic;
+}

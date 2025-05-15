@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPendingExams, reviewExamProposal } from "../../../api/api";  // Nu mai importăm getAcceptedExams
+import { getPendingExams, reviewExamProposal,fetchProfessors, fetchRooms } from "../../../api/api";  // Nu mai importăm getAcceptedExams
 import navigateWithError from "../../../utils/navigateWithError";
 import { useNavigate } from "react-router-dom";
 import Calendar from 'react-calendar'; // Importăm Calendar
@@ -13,6 +13,9 @@ const ExameneInAsteptare = () => {
   const [selectedExam, setSelectedExam] = useState(null);  // Examenul selectat
   const [dateSelected, setDateSelected] = useState(new Date()); // Data selectată pe calendar
   const [successMessage, setSuccessMessage] = useState("");  // Mesajul de succes
+  const [professors, setProfessors] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +36,15 @@ const ExameneInAsteptare = () => {
       try {
         const examsPending = await getPendingExams(token);  // Obținem doar examenele în așteptare
         setPendingExams(examsPending);
+
+        const [profs, roomList] = await Promise.all([
+          fetchProfessors(token),
+          fetchRooms(token)
+        ]);
+
+        setProfessors(profs);
+        setRooms(roomList);
+
       } catch (err) {
         navigateWithError(navigate, err.message, "Eroare la încărcarea propunerilor");
       } finally {
@@ -174,20 +186,34 @@ const ExameneInAsteptare = () => {
                   <>
                     <div className="input-row">
                       <div>
-                        <input
-                          type="number"
-                          placeholder="ID sală"
+
+                        <select
                           value={form.room_id || ""}
                           onChange={(e) => handleInputChange(exam.exam_id, "room_id", e.target.value)}
-                        />
+                        >
+                          <option value="">Selectează sală</option>
+                          {rooms.map((room) => (
+                            <option key={room.room_id} value={room.room_id}>
+                              {room.room_name || `Sală ${room.room_id}`}
+                            </option>
+                          ))}
+                        </select>
+
                       </div>
                       <div>
-                        <input
-                          type="number"
-                          placeholder="ID asistent"
+
+                      <select
                           value={form.assistant_id || ""}
                           onChange={(e) => handleInputChange(exam.exam_id, "assistant_id", e.target.value)}
-                        />
+                        >
+                          <option value="">Selectează asistent</option>
+                          {professors.map((prof) => (
+                            <option key={prof.user_id} value={prof.user_id}>
+                              {prof.name} ({prof.email})
+                            </option>
+                          ))}
+                        </select>
+                      
                       </div>
                     </div>
                     <div className="input-row">

@@ -6,7 +6,8 @@ import {
   downloadPDF,
   downloadExcel,
   downloadUserTemplate,
-  uploadUsers, // API-ul pentru upload
+  uploadUsers, 
+  syncData,// API-ul pentru upload
 } from "../../api/api";
 import "./Descarcare.css";
 
@@ -44,6 +45,30 @@ const Descarcare = () => {
     const role = localStorage.getItem("user_role");
     setUserRole(role); // Salvează rolul utilizatorului
   }, [navigate, token]);
+
+  const handleSync = async () => {
+    const toastId = toast.loading("Se sincronizează datele...");
+    try {
+      const response = await syncData(token);
+      toast.update(toastId, {
+        render: "Datele au fost sincronizate cu succes!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      console.log("Sync response:", response);
+    } catch (error) {
+      const msg = `Eroare la sincronizare: ${error.message}`;
+      setErrorMessage(msg);
+      toast.update(toastId, {
+        render: msg,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      console.error("Sync error:", error);
+    }
+  };
 
   const handleDownload = async (downloadFunc, fileName) => {
     const toastId = toast.loading("Se descarcă fișierul...");
@@ -168,6 +193,18 @@ const Descarcare = () => {
         </div>
       ) : (
         <p className="no-permission-message">Nu aveți permisiunea de a încărca fișiere.</p>
+      )}
+
+      {userRole === "ADM" && (
+        <div className="section-container">
+          <h2 className="section-title">🔄 Sincronizare date</h2>
+          <p className="section-description">Folosește acest buton pentru a sincroniza administratorul datele manual.</p>
+          <div className="form-btn-container">
+            <button className="submit-btn" onClick={handleSync}>
+              Sincronizează acum
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

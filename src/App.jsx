@@ -21,7 +21,8 @@ import Descarcare from "./pages/Descarcare/Descarcare";
 // Layout-uri
 import LayoutWithNavbar from "./components/LayoutWithNavbar";
 import LayoutWithoutNavbar from "./components/LayoutWithoutNavbar";
-
+import ListaProfesori from "./pages/ListaProfesori/ListaProfesori";
+import TeacherDetails from "./pages/ListaProfesori/TeacherDetails";
 function App() {
   const userRole = "ADM"; // În viitor poate fi luat din context/autentificare
 
@@ -50,7 +51,11 @@ function App() {
         <Route path="/settings" element={<Setari />} />
         <Route path="/settings/adaugare" element={<AddPeriod />} />
         <Route path="/settings/editare/:id" element={<EditPeriod />} />
-
+        
+        {/* Profesori */}
+        <Route path="/users/professors" element={<ListaProfesori />} />
+        <Route path="/users/:user_id" element={<TeacherDetails />} />
+        
         {/* Descarcare (dacă ai) */}
         <Route path="/descarcare" element={<Descarcare/>} />
       </Route>

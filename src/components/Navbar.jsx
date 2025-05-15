@@ -25,14 +25,8 @@ const Navbar = ({ onLogout, userRole }) => {
           Acasă
         </button>
 
-        <button
-          className={`tab-button ${isActive("/courses") ? "active" : ""}`}
-          onClick={() => navigate("/courses")}
-        >
-          Cursuri
-        </button>
-
-        {(userRole === "ADM" || userRole === "SEC") && (
+        
+        {(userRole === "SEC") && (
           <>
             
             <button
@@ -42,6 +36,32 @@ const Navbar = ({ onLogout, userRole }) => {
               Clase
             </button>
 
+            <button
+              className={`tab-button ${isActive("/users/professors") ? "active" : ""}`}
+              onClick={() => navigate("/users/professors")}
+            >
+              Profesori
+            </button>
+
+            <button
+              className={`tab-button ${isActive("/descarcare") ? "active" : ""}`}
+              onClick={() => navigate("/descarcare")}
+            >
+              Gestionare fișiere
+            </button>
+
+            <button
+              className={`tab-button ${isActive("/settings") ? "active" : ""}`}
+              onClick={() => navigate("/settings")}
+            >
+              Setări
+            </button>
+          </>
+        )}
+
+        {(userRole === "ADM" ) && (
+          <>
+            
             <button
               className={`tab-button ${isActive("/descarcare") ? "active" : ""}`}
               onClick={() => navigate("/descarcare")}

@@ -99,6 +99,14 @@ export const updateExaminationPeriod = (id, data, token) =>
 
 export const deleteExaminationPeriod = (id, token) =>
   fetchWithAuth(`/settings/examination-periods/${id}`, { method: "DELETE", token });
+//
+// Professors
+//
+export const fetchProfessors = (token) =>
+  fetchWithAuth("/users/professors", { method: "GET", token });
+
+export const updateUserDetails = (userId, data, token) =>
+  fetchWithAuth(`/users/${userId}`, { method: "PUT", body: data, token });
 
 //
 // Rooms
@@ -113,6 +121,7 @@ export const fetchRooms = async (token) => {
     throw error; // 🔁 Opțional: aruncă eroarea mai departe pentru a o prinde în componentă
   }
 };
+
 //
 // Auth
 //
@@ -133,6 +142,7 @@ export const logout = async () => {
   }
 };
 
+//------------------------
 //
 // Downloads
 //
@@ -197,19 +207,28 @@ export const downloadUserTemplate = async (token) => {
 // Uploads
 //
 export const uploadUsers = async (formData, token) => {
-  const response = await fetch("/upload-users", {
+  const endpoint = "/upload-users";
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      // Nu setăm Content-Type — browserul îl setează automat pentru FormData
     },
     body: formData,
   });
 
   if (!response.ok) {
-    throw new Error("Eroare la încărcarea fișierului.");
+    const errorText = await response.text().catch(() => null);
+    throw new Error(`Eroare ${response.status}: ${errorText || response.statusText}`);
   }
 
   return await response.json();
 };
 
+//
+// SYNC DATA
+//
 
+export const syncData = (token) =>
+  fetchWithAuth("/sync-data", { method: "POST", token });

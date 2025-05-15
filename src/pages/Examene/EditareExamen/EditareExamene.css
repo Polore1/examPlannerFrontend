@@ -1,0 +1,89 @@
+.pending-exams-container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: auto;
+  }
+  
+  .exam-list {
+    margin-top: 2rem;
+    border-top: 1px solid #ccc;
+  }
+  
+  .exam-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eaeaea;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .exam-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .decision-container {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #fafafa;
+  }
+  
+  .input-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .input-row input,
+  .input-row select {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  textarea {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    min-height: 100px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  .button-container {
+    text-align: right;
+    margin-top: 1rem;
+  }
+  
+  .button-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .button-container button:hover {
+    background-color: #45a049;
+  }
+  
+  .success-message {
+    padding: 1rem;
+    background-color: #e7f7ea;
+    border-left: 5px solid #2e7d32;
+    margin-bottom: 1rem;
+  }
+  
+  .calendar-container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .react-calendar__tile.highlight {
+    background: #bde0fe;
+  }
+  
