@@ -307,3 +307,52 @@ select.input-readonly:disabled {
 .confirm-delete-message .cancel-btn:hover {
   background-color: #d5d5d5;
 }
+.reset-db-container {
+  margin-top: 2rem;
+  padding: 15px 20px;
+  background-color: #ffe6e6;
+  border: 2px solid #c0392b;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.reset-db-container h3 {
+  color: #c0392b;
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+
+.reset-btn {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 14px 28px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 10px rgba(231, 76, 60, 0.6);
+  transition: 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: block;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(45deg, #c0392b, #e74c3c);
+  transform: scale(1.05);
+}
+
+.reset-message {
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #2e7d32; /* verde pentru succes */
+  min-height: 24px; /* ca să nu sară conținutul când apare mesajul */
+}

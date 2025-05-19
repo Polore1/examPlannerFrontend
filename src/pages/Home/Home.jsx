@@ -28,12 +28,6 @@ const Home = () => {
   // Funcție pentru a extrage datele (cursuri, examene, etc.)
   const fetchData = async (token, role) => {
     try {
-      // if (role !== "SG") {
-      //   const coursesData = await fetchCourses(token);
-      //   setCourses(coursesData);
-      //   setFilteredCourses(coursesData);
-      // }
-
       if (role === "SG") {
         const examsData = await getExamsForGroup(token);
         setExamsForGroup(examsData);
@@ -48,17 +42,17 @@ const Home = () => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
     setUserRole(role);
-
+  
     if (!token) {
       navigateWithError(navigate, "⚠️ Autentificare necesară.", "Token lipsă");
       return;
     }
-
+  
     if (checkTokenExpiration(token)) {
       navigateWithError(navigate, "⚠️ Token expirat, te rugăm să te autentifici din nou.", "Token Expirat");
       return;
     }
-
+  
     fetchData(token, role);
   }, [navigate]);
 
@@ -99,8 +93,9 @@ const Home = () => {
       case "ADM":
         return (
           <>
-            {/* <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button> */}
-            {/* <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button> */}
+          
+            <button className="tab-button" onClick={() => navigate("/users/secretary")}>Adauga secretar</button>
+            <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button>
             <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fisiere</button>
             <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
           </>
@@ -111,10 +106,9 @@ const Home = () => {
           <>
             
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
-            <button className="tab-button" onClick={() => navigate("/rooms")}>Vizualizare sali de clasa</button>
+            <button className="tab-button" onClick={() => navigate("/exam/all")}>Examene</button>
             <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button>
-            
-            <button className="tab-button" onClick={() => navigate("/exam/for/group")}>Examene</button>
+            {/* <button className="tab-button" onClick={() => navigate("/exam/for/group")}>Examene</button> */}
             <button className="tab-button" onClick={() => navigate("/descarcare")}>Gestionare fișiere</button>
             <button className="tab-button" onClick={() => navigate("/settings")}>Setări</button>
             
@@ -124,17 +118,17 @@ const Home = () => {
         return (
           <>
             <button className="tab-button" onClick={() => navigate("/exam/propose")}>Propune Examen</button>
+            {/* <button className="tab-button" onClick={() => navigate("/exams/reschedule")}>Reprogramare examene respinse</button> */}
+            <button className="tab-button" onClick={() => navigate("/exam/group")}>Vizualizare examene grupa</button>
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
-            <button className="tab-button" onClick={() => navigate("/exams/group")}>Vizualizare examene grupa</button>
-            {/* <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button> */}
           </>
         );
       case "CD":
         return (
           <>
             <button className="tab-button" onClick={() => navigate("/courses")}>Vizualizare cursuri</button>
-            <button className="tab-button" onClick={() => navigate("/exams/pending")}>Examene in asteptare</button>
-            <button className="tab-button" onClick={() => navigate("/exam/review")}>Revizuire examene</button>
+            <button className="tab-button" onClick={() => navigate("/exam/by-status")}>Status examene </button>
+            {/* <button className="tab-button" onClick={() => navigate("/exam/review")}>Revizuire examene</button> */}
             <button className="tab-button" onClick={() => navigate("/users/professors")}>Profesori</button>
           </>
         );

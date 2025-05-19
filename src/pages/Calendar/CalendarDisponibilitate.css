@@ -104,3 +104,24 @@
   flex-grow: 1;
   text-align: center;
 }
+
+.rejected-day {
+  background: #ffcccc !important;
+  color: #a70000 !important;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.pending-day {
+  background: #fff7cc !important;
+  color: #9c8500 !important;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.accepted-day {
+  background: #ccffcc !important;
+  color: #207a20 !important;
+  border-radius: 50%;
+  font-weight: bold;
+}

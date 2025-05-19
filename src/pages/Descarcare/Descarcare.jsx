@@ -195,15 +195,16 @@ const Descarcare = () => {
         <p className="no-permission-message">Nu aveți permisiunea de a încărca fișiere.</p>
       )}
 
-      {userRole === "ADM" && (
+      {userRole === "SEC" && (
         <div className="section-container">
           <h2 className="section-title">🔄 Sincronizare date</h2>
-          <p className="section-description">Folosește acest buton pentru a sincroniza administratorul datele manual.</p>
           <div className="form-btn-container">
             <button className="submit-btn" onClick={handleSync}>
               Sincronizează acum
             </button>
           </div>
+          <p className="section-description">Folosește acest buton pentru a sincroniza datele manual.</p>
+          
         </div>
       )}
     </div>

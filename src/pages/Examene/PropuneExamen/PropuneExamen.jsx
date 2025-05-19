@@ -79,6 +79,12 @@ const PropuneExamen = () => {
     setDate(selectedDate.toISOString().split('T')[0]); // Formatează data într-un format "YYYY-MM-DD"
   };
 
+  // const filteredExams = userExams.filter(
+  //   (exam) =>
+  //     exam.course_id === parseInt(courseId) &&
+  //     exam.period_id === autoSelectedPeriod?.examination_period_id
+  // );
+
   // Trimite propunerea de examen
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,9 +116,56 @@ const PropuneExamen = () => {
       setDate('');
       setAutoSelectedPeriod(null);
     } catch (err) {
+  console.error(err);
+
+  let backendErrorMessage = 'A apărut o eroare neașteptată.';
+
+  if (err.message) {
+    try {
+      // Caută partea JSON în mesajul erorii
+      const jsonStart = err.message.indexOf('{');
+      if (jsonStart !== -1) {
+        const jsonPart = err.message.substring(jsonStart);
+        const parsedError = JSON.parse(jsonPart);
+        if (parsedError.error) {
+          backendErrorMessage = parsedError.error;
+        } else {
+          backendErrorMessage = err.message; // fallback dacă nu găsește câmpul 'error'
+        }
+      } else {
+        backendErrorMessage = err.message; // fallback dacă nu găsește JSON în mesaj
+      }
+    } catch (err) {
       console.error(err);
-      setError(err.message || 'A apărut o eroare neașteptată.');
+    
+      let backendErrorMessage = 'A apărut o eroare neașteptată.';
+    
+      if (err.message) {
+        try {
+          // Caută partea JSON în mesajul erorii
+          const jsonStart = err.message.indexOf('{');
+          if (jsonStart !== -1) {
+            const jsonPart = err.message.substring(jsonStart);
+            const parsedError = JSON.parse(jsonPart);
+            if (parsedError.error) {
+              backendErrorMessage = parsedError.error;
+            } else {
+              backendErrorMessage = err.message; // fallback dacă nu găsește câmpul 'error'
+            }
+          } else {
+            backendErrorMessage = err.message; // fallback dacă nu găsește JSON în mesaj
+          }
+        } catch {
+          backendErrorMessage = err.message; // fallback dacă JSON invalid
+        }
+      }
+    
+      setError(backendErrorMessage);
     }
+  }
+
+  setError(backendErrorMessage);
+}
   };
 
   return (
@@ -146,6 +199,7 @@ const PropuneExamen = () => {
     <CalendarDisponibilitate
       examRange={autoSelectedPeriod}
       onDateSelect={handleDateSelect}
+      // examDates={filteredExams}
     />
   )}
 

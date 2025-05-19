@@ -57,21 +57,18 @@ export const setExaminationMethod = (courseId, method, token) =>
 //
 // Exams
 //
-// SG 
-export const getExamsForGroup = (token) =>
-  fetchWithAuth("/exam/for/group", { method: "GET", token });
 
-export const getPendingExams = (token) =>
-  fetchWithAuth("/exam/pending", { method: "GET", token });
+export const fetchExams = (token) =>
+  fetchWithAuth('/exam/all',{method:"GET", token})
 
-export const getExamDetails = (examId, token) =>
-  fetchWithAuth(`/exam/${examId}`, { method: "GET", token });
-
+//TO DO: exam/all - DONE
+//TO DO: exam/by-status
+//TO DO: exam/edit/{id} - impelmentat ( TO VERIFY )
 export const editExam = (examId, examData, token) =>
   fetchWithAuth(`/exam/edit/${examId}`, { method: "PUT", body: examData, token });
 
-export const updateExamDate = (examId, newDate, token) =>
-  fetchWithAuth(`/exam/${examId}/update-date`, { method: "PATCH", body: { newDate }, token });
+export const getExamsForGroup = (token) =>
+  fetchWithAuth("/exam/for/group", { method: "GET", token });
 
 export const proposeExam = (data, token) =>
   fetchWithAuth("/exam/propose", { method: "POST", body: data, token });
@@ -79,8 +76,15 @@ export const proposeExam = (data, token) =>
 export const reviewExamProposal = (data, token) =>
   fetchWithAuth("/exam/review", {method: "PUT",body: data,token });
 
-export const getExamProposals = (token) =>
-  fetchWithAuth("/exam/propose", { method: "POST", token });
+export const getExamsByStatus = (token) =>    //ExameneInAsteptare
+  fetchWithAuth("/exam/by-status",{method: "GET", token})
+
+export const getExamDetails = (examId, token) =>
+  fetchWithAuth(`/exam/${examId}`, { method: "GET", token });
+
+export const updateExamDate = (examId, newDate, token) =>
+  fetchWithAuth(`/exam/${examId}/update-date`, { method: "PATCH", body: newDate, token });
+
 
 //
 // Examination Periods
@@ -99,14 +103,24 @@ export const updateExaminationPeriod = (id, data, token) =>
 
 export const deleteExaminationPeriod = (id, token) =>
   fetchWithAuth(`/settings/examination-periods/${id}`, { method: "DELETE", token });
+
+//TO DO: settings/reset
+export const handleDatabaseReset = (token) =>
+  fetchWithAuth('/settings/reset', {method:"POST", token})
+
 //
-// Professors
+// Utilizatori
 //
 export const fetchProfessors = (token) =>
   fetchWithAuth("/users/professors", { method: "GET", token });
 
 export const updateUserDetails = (userId, data, token) =>
   fetchWithAuth(`/users/${userId}`, { method: "PUT", body: data, token });
+
+export const addSecretary = (token, secretatyData)=> 
+  fetchWithAuth('/users/secretary', {method: "POST", body: secretatyData,token})
+//TO DO: users/{user_id} DELETE
+//TO DO: users/secretary
 
 //
 // Rooms
@@ -226,9 +240,6 @@ export const uploadUsers = async (formData, token) => {
   return await response.json();
 };
 
-//
-// SYNC DATA
-//
 
 export const syncData = (token) =>
   fetchWithAuth("/sync-data", { method: "POST", token });

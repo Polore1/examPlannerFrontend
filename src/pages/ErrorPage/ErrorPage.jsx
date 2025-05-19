@@ -12,7 +12,7 @@ const ErrorPage = () => {
     <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
       <h1>❌ {errorType}</h1>
       <p>{errorMessage}</p>
-      <button onClick={() => navigate(-1)} style={{ marginTop: "20px" }}>
+      <button onClick={() => navigate('/')} style={{ marginTop: "20px" }}>
         🔙 Înapoi
       </button>
     </div>

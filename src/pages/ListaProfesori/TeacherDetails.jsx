@@ -102,13 +102,13 @@ const TeacherDetails = () => {
         </div>
       )}
 
-      <label>ID profesor:</label>
+      {/* <label>ID profesor:</label>
       <input
         type="text"
         value={teacher.user_id}
         readOnly
         className="input-field"
-      />
+      /> */}
 
       <label>Email:</label>
       <input
@@ -128,7 +128,7 @@ const TeacherDetails = () => {
         className={`input-field ${modifiedFields.name ? "modified" : ""}`}
       />
 
-      <label>Rol:</label>
+      {/* <label>Rol:</label>
       <select
         name="role"
         value={editedTeacher.role}
@@ -139,7 +139,7 @@ const TeacherDetails = () => {
         <option value="SEC">Secretariat (SEC)</option>
         <option value="ADM">Administrator (ADM)</option>
         <option value="SG">Șef de grupă (SG)</option>
-      </select>
+      </select> */}
 
       <div className="button-container">
         <button className="back-button" onClick={() => navigate("/users/professors")}>

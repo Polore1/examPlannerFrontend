@@ -1,40 +1,48 @@
-// In ExameneInAsteptare.jsx
-import { useEffect, useState } from "react";
-import { getPendingExams, reviewExamProposal, fetchProfessors, fetchRooms, editExam } from "../../../api/api";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { editExam, fetchProfessors, fetchRooms, getExamDetails } from "../../../api/api";
 import navigateWithError from "../../../utils/navigateWithError";
-import { useNavigate } from "react-router-dom";
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import "./ExameneInAsteptare.css";
+import { useEffect, useState } from "react";
+import "./EditareExamene.css";
 
 const EditareExamene = () => {
-  const [pendingExams, setPendingExams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [formStates, setFormStates] = useState({});
-  const [selectedExam, setSelectedExam] = useState(null);
-  const [dateSelected, setDateSelected] = useState(new Date());
-  const [successMessage, setSuccessMessage] = useState("");
-  const [professors, setProfessors] = useState([]);
-  const [rooms, setRooms] = useState([]);
+  const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
 
+  const [exam, setExam] = useState(location.state?.exam || null);
+  const [form, setForm] = useState({});
+  const [professors, setProfessors] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [modifiedFields, setModifiedFields] = useState({});
+
   useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const role = localStorage.getItem("user_role");
+
+    if (!token) return navigateWithError(navigate, "Autentificare necesară.", "Token lipsă");
+    if (role !== "SEC") return navigateWithError(navigate, "Acces interzis", "Doar coordonatorii pot accesa.");
+
     const fetchData = async () => {
-      const token = localStorage.getItem("access_token");
-      const role = localStorage.getItem("user_role");
-
-      if (!token) return navigateWithError(navigate, "Autentificare necesară.", "Token lipsă");
-      if (role !== "CD") return navigateWithError(navigate, "Acces interzis", "Doar coordonatorii pot accesa.");
-
+      setLoading(true);
       try {
-        const [examsPending, profs, roomList] = await Promise.all([
-          getPendingExams(token),
+        const examData = await getExamDetails(id, token);
+        const [profs, roomList] = await Promise.all([
           fetchProfessors(token),
-          fetchRooms(token)
+          fetchRooms(token),
         ]);
-        setPendingExams(examsPending);
+
         setProfessors(profs);
         setRooms(roomList);
+        setExam(examData);
+
+        const foundRoom = roomList.find(r => r.room_id === examData.room_id);
+        const foundProfessor = profs.find(p => p.user_id === examData.professor_id);
+        const foundAssistant = profs.find(p => p.user_id === examData.assistant_id);
+
+        fillFormFromExam(examData, foundRoom, foundProfessor, foundAssistant);
       } catch (err) {
         navigateWithError(navigate, err.message, "Eroare la încărcarea datelor");
       } finally {
@@ -43,52 +51,82 @@ const EditareExamene = () => {
     };
 
     fetchData();
-  }, [navigate]);
+  }, [id, navigate]);
 
-  const handleInputChange = (examId, field, value) => {
-    setFormStates(prev => ({
+  const fillFormFromExam = (examData, foundRoom, foundProfessor, foundAssistant) => {
+    const initialForm = {
+      exam_date: examData.exam_date,
+      start_time: examData.start_time,
+      duration: examData.duration || "",
+      room_id: foundRoom ? examData.room_id : "",
+      professor_id: foundProfessor ? examData.professor_id : "",
+      assistant_id: foundAssistant ? examData.assistant_id : "",
+      details: examData.details || ""
+    };
+    setForm(initialForm);
+  };
+
+  const handleChange = (field, value) => {
+    const numericFields = ["room_id", "assistant_id", "professor_id", "duration"];
+    setForm(prev => ({
       ...prev,
-      [examId]: {
-        ...prev[examId],
-        [field]: value
-      }
+      [field]: numericFields.includes(field) ? Number(value) : value
+    }));
+
+    setModifiedFields(prev => ({
+      ...prev,
+      [field]: true
     }));
   };
 
-  const handleEditExam = async (examId) => {
+  const handleSubmit = async () => {
     const token = localStorage.getItem("access_token");
-    const form = formStates[examId];
+    const required = ["room_id", "assistant_id", "start_time", "duration", "exam_date", "professor_id"];
+    if (!required.every(f => form[f])) {
+      alert("Completează toate câmpurile.");
+      return;
+    }
 
-    const requiredFields = ["room_id", "assistant_id", "start_time", "duration", "exam_date", "professor_id"];
-    if (!requiredFields.every(f => form?.[f])) {
-      alert("Completează toate câmpurile pentru editare.");
+    if (Number(form.duration) < 60 || Number(form.duration) > 300) {
+      alert("Durata trebuie să fie între 60 și 300 de minute.");
       return;
     }
 
     const payload = {
-      assistant_id: parseInt(form.assistant_id),
-      details: form.details || "",
-      duration: parseInt(form.duration),
-      exam_date: form.exam_date,
-      professor_id: parseInt(form.professor_id),
-      room_id: parseInt(form.room_id),
-      start_time: form.start_time,
+      ...form,
+      room_id: Number(form.room_id),
+      assistant_id: Number(form.assistant_id),
+      professor_id: Number(form.professor_id),
+      duration: Number(form.duration),
       status: "ACCEPTAT"
     };
 
     try {
-      await editExam(examId, payload, token);
+      setSaving(true);
+      await editExam(id, payload, token);
       setSuccessMessage("Examenul a fost modificat cu succes!");
-      setPendingExams(prev => prev.filter(e => e.exam_id !== examId));
-      setSelectedExam(null);
+      setModifiedFields({});
     } catch (err) {
-      alert("Eroare la editare: " + err.message);
+      alert("Eroare la salvare: " + err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner" />
+        <p>Se încarcă datele examenului...</p>
+      </div>
+    );
+  }
+
+  if (!exam) return <p>Datele examenului nu au fost furnizate.</p>;
+
   return (
-    <div className="pending-exams-container">
-      <h2>Propuneri de examene în așteptare</h2>
+    <div className="editare-examen-container">
+      <h2>Editare examen: {exam?.course_name || "Examen necunoscut"}</h2>
 
       {successMessage && (
         <div className="success-message">
@@ -97,69 +135,99 @@ const EditareExamene = () => {
         </div>
       )}
 
-      <div className="calendar-container">
-        <Calendar
-          onChange={setDateSelected}
-          value={dateSelected}
-          tileClassName={({ date }) => {
-            const isExamDate = pendingExams.some(e => new Date(e.exam_date).toDateString() === date.toDateString());
-            return isExamDate ? 'highlight' : '';
-          }}
-        />
+      <div className="form-grid">
+        <div className="input-group">
+          <label>Data examenului</label>
+          <input
+            type="date"
+            value={form.exam_date}
+            onChange={e => handleChange("exam_date", e.target.value)}
+            className={modifiedFields.exam_date ? "input-field modified" : "input-field"}
+          />
+        </div>
+
+        <div className="input-group">
+          <label>Ora de început</label>
+          <input
+            type="time"
+            value={form.start_time}
+            onChange={e => handleChange("start_time", e.target.value)}
+            className={modifiedFields.start_time ? "input-field modified" : "input-field"}
+          />
+        </div>
+
+        <div className="input-group">
+          <label>Durată (minute)</label>
+          <select
+            value={form.duration ?? ""}
+            onChange={e => handleChange("duration", e.target.value)}
+            className={modifiedFields.duration ? "input-field modified" : "input-field"}
+          >
+            <option value="">Selectează durată</option>
+            {[60, 120, 180, 240, 300].map(d => (
+              <option key={d} value={d}>{d} minute</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label>Profesor</label>
+          <select
+            value={form.professor_id ?? ""}
+            onChange={e => handleChange("professor_id", e.target.value)}
+          >
+            <option value="">Selectează profesor</option>
+            {professors.map(p => (
+              <option key={p.user_id} value={p.user_id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label>Asistent</label>
+          <select
+            value={form.assistant_id ?? ""}
+            onChange={e => handleChange("assistant_id", e.target.value)}
+          >
+            <option value="">Selectează asistent</option>
+            {professors.map(p => (
+              <option key={p.user_id} value={p.user_id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group">
+          <label>Sală</label>
+          <select
+            value={form.room_id ?? ""}
+            onChange={e => handleChange("room_id", e.target.value)}
+          >
+            <option value="">Selectează sală</option>
+            {rooms.map(r => (
+              <option key={r.room_id} value={r.room_id}>{r.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="input-group full-width">
+          <label>Detalii</label>
+          <textarea
+            placeholder="Detalii"
+            value={form.details}
+            onChange={e => handleChange("details", e.target.value)}
+          />
+        </div>
       </div>
 
-      {selectedExam && pendingExams.map((exam) => {
-        if (exam.exam_id !== selectedExam) return null;
-        const form = formStates[exam.exam_id] || {};
-
-        return (
-          <div key={exam.exam_id} className="decision-container">
-            <h3>Modifică examenul: <strong>{exam.course_name}</strong></h3>
-
-            <div className="input-row">
-              <input type="date" value={form.exam_date || ""} onChange={(e) => handleInputChange(exam.exam_id, "exam_date", e.target.value)} />
-              <input type="time" value={form.start_time || ""} onChange={(e) => handleInputChange(exam.exam_id, "start_time", e.target.value)} />
-            </div>
-
-            <div className="input-row">
-              <select value={form.professor_id || ""} onChange={(e) => handleInputChange(exam.exam_id, "professor_id", e.target.value)}>
-                <option value="">Selectează profesor</option>
-                {professors.map(p => <option key={p.user_id} value={p.user_id}>{p.name}</option>)}
-              </select>
-
-              <select value={form.assistant_id || ""} onChange={(e) => handleInputChange(exam.exam_id, "assistant_id", e.target.value)}>
-                <option value="">Selectează asistent</option>
-                {professors.map(a => <option key={a.user_id} value={a.user_id}>{a.name}</option>)}
-              </select>
-            </div>
-
-            <div className="input-row">
-              <select value={form.room_id || ""} onChange={(e) => handleInputChange(exam.exam_id, "room_id", e.target.value)}>
-                <option value="">Selectează sală</option>
-                {rooms.map(r => <option key={r.room_id} value={r.room_id}>{r.name}</option>)}
-              </select>
-              <input type="number" placeholder="Durata (minute)" value={form.duration || ""} onChange={(e) => handleInputChange(exam.exam_id, "duration", e.target.value)} />
-            </div>
-
-            <textarea placeholder="Detalii" value={form.details || ""} onChange={(e) => handleInputChange(exam.exam_id, "details", e.target.value)} />
-
-            <div className="button-container">
-              <button onClick={() => handleEditExam(exam.exam_id)}>Salvează modificările</button>
-            </div>
-          </div>
-        );
-      })}
-
-      <div className="exam-list">
-        {pendingExams.length === 0 ? (
-          <p>Nu există propuneri în așteptare.</p>
-        ) : (
-          pendingExams.map(exam => (
-            <div key={exam.exam_id} onClick={() => setSelectedExam(exam.exam_id)} className="exam-item">
-              <strong>{exam.course_name}</strong> — propus pentru data: <em>{exam.exam_date}</em>
-            </div>
-          ))
-        )}
+      <div className="button-container-centered">
+        <button className="back-button small" onClick={() => navigate("/exam/all")}>Înapoi</button>
+        <button
+          className="save-button small"
+          onClick={handleSubmit}
+          disabled={saving}
+        >
+          {saving ? "Se salvează..." : "Salvează"}
+        </button>
       </div>
     </div>
   );

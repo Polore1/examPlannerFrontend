@@ -124,3 +124,13 @@ form {
 .react-datepicker-wrapper {
   width: 100%;
 }
+.submit-error {
+  color: #ff4d4f; /* roșu aprins */
+  background-color: #ffe6e6; /* fundal deschis, opțional */
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #ff4d4f;
+}

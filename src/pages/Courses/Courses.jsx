@@ -71,7 +71,7 @@ const Courses = () => {
             <table className="courses-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  {/* <th>ID</th> */}
                   <th>Nume</th>
                   <th>An studiu</th>
                   <th>Specializare</th>
@@ -85,7 +85,7 @@ const Courses = () => {
                     onClick={() => handleViewDetails(course.id)}
                     className="clickable-row"
                   >
-                    <td>{course.id}</td>
+                    {/* <td>{course.id}</td> */}
                     <td>{course.name}</td>
                     <td>{course.study_year}</td>
                     <td>{course.specialization}</td>

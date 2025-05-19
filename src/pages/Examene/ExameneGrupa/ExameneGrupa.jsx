@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getExamsForGroup } from '../../../api/api';
+import { useNavigate } from 'react-router-dom';
 import './ExameneGrupa.css';
 
 const ExameneGrupa = () => {
   const [examene, setExamene] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -68,7 +70,9 @@ const ExameneGrupa = () => {
               {examene.map((ex) => {
                 const { text, className } = translateStatus(ex.status); // Extragem textul și clasa
                 return (
-                  <tr key={ex.exam_id}>
+
+                  <React.Fragment key={ex.exam_id}>
+                  <tr onClick={() => setExpandedRow(expandedRow === ex.exam_id ? null : ex.exam_id)}>
                     <td>{ex.course_name}</td>
                     <td>{ex.professor}</td>
                     <td>{ex.exam_type}</td>
@@ -78,12 +82,20 @@ const ExameneGrupa = () => {
                     <td>{ex.exam_date}</td>
                     <td>{ex.start_time}</td>
                     <td>{ex.assistant}</td>
-                    <td className={`exam-status ${className}`}>
-                      {text} {/* Afișăm statusul tradus */}
-                    </td>
+                    <td className={`exam-status ${className}`}>{text}</td>
                   </tr>
+
+                  {expandedRow === ex.exam_id && ex.details && (
+                    <tr className="exam-details-row">
+                      <td colSpan="10">
+                        <strong>Detalii:</strong> {ex.details}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
                 );
               })}
+
             </tbody>
           </table>
         </div>

@@ -96,6 +96,16 @@
   color: black; /* Text alb */
 }
 
+.exam-details-row td {
+  background-color: #eef5ff;
+  padding: 12px 18px;
+  font-style: italic;
+  color: #333;
+}
+.examene-table tr:hover {
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .examene-table th,
   .examene-table td {

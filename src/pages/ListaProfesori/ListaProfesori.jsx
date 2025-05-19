@@ -57,7 +57,7 @@ const ListaProfesori = () => {
             <table className="profesori-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  {/* <th>ID</th> */}
                   <th>Nume</th>
                   <th>Email</th>
                 </tr>
@@ -72,7 +72,7 @@ const ListaProfesori = () => {
                       style={{ cursor: "pointer" }}
                       className="profesor-row"
                     >
-                      <td>{prof.user_id}</td>
+                      {/* <td>{prof.user_id}</td> */}
                       <td>{prof.name}</td>
                       <td>{prof.email}</td>
                     </tr>
