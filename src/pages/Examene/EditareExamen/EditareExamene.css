@@ -64,18 +64,56 @@
   
   /* ==== Mesaj de succes ==== */
   .success-message {
-    padding: 1rem;
-    background-color: #e7f7ea;
-    border-left: 5px solid #2e7d32;
-    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background-color: #e8f5e9;
+    border-left: 6px solid #43a047;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    color: #2e7d32;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  .success-message p {
+    margin: 0;
+    flex: 1;
   }
   
+  .success-message button {
+    background: none;
+    border: none;
+    color: #2e7d32;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 1rem;
+    font-weight: bold;
+  }
+  
+  .success-message button:hover {
+    text-decoration: underline;
+  }
   /* ==== Butoane ==== */
   .button-container-centered {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .back-button.small {
+    padding: 0.3rem 0.7rem;
+    width: 50px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    color: #444;
+  }
+  .back-button.small:hover {
+    background-color: #ccc;
   }
   
   .button-container-centered .small {
@@ -87,8 +125,17 @@
   }
   
   .save-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    width: 400px;
+    border: none;
+    cursor: pointer;
     background-color: #007bff;
     color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    transition: background-color 0.2s ease;
   }
   
   .save-button:hover {

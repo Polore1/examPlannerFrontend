@@ -118,40 +118,28 @@ const Setari = () => {
         <>
           <h2 className="section-title">Perioade de Examinare</h2>
 
-          {loading && <p className="loading-message">Se încarcă datele...</p>}
+          {loading && <p className="loading-spinner"></p>}
 
           {!loading && (
             <>
-              {/* Tabel */}
               <div className="table-container">
-                <table className="period-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nume</th>
-                      <th>Început</th>
-                      <th>Sfârșit</th>
-                      <th>Acțiuni</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {periods.map((period) => (
-                      <tr key={period.examination_period_id}>
-                        <td>{period.examination_period_id}</td>
-                        <td>{period.name}</td>
-                        <td>{period.period_start}</td>
-                        <td>{period.period_end}</td>
-                        <td>
-                          <button className="edit-btn" onClick={() => handleEdit(period)}>Editează</button>
-                          <button className="delete-btn" onClick={() => handleDelete(period.examination_period_id)}>Șterge</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {periods.map((period) => (
+                  <div key={period.examination_period_id} className="period-card">
+                    <h4>{period.name}</h4>
+                    <p className="period-date"><strong>Început:</strong> {period.period_start}</p>
+                    <p className="period-date"><strong>Sfârșit:</strong> {period.period_end}</p>
+                    <div className="period-actions">
+                      <button className="edit-btn" onClick={() => handleEdit(period)}>
+                        <i className="fas fa-edit"></i> Editează
+                      </button>
+                      <button className="delete-btn" onClick={() => handleDelete(period.examination_period_id)}>
+                        <i className="fas fa-trash-alt"></i> Șterge
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Confirmare ștergere */}
               {confirmDelete && (
                 <div className="confirm-delete-message">
                   <p>Sigur vrei să ștergi această perioadă?</p>
@@ -162,23 +150,12 @@ const Setari = () => {
                 </div>
               )}
 
-              {/* Formular */}
               {(canAddPeriod() || editId) && (
                 <div className="form-container">
-                  <h3>{editId ? "Editează Perioada" : "Adaugă Perioadă"}</h3>
+                  <h3 className="form-title">{editId ? "Editează Perioada" : "Adaugă Perioadă"}</h3>
                   <form onSubmit={handleSubmit}>
                     <div className="form-flex-row">
                       <div className="form-column">
-                        <div className="form-group">
-                          <label htmlFor="perioada-id">ID Perioadă:</label>
-                          <input
-                            id="perioada-id"
-                            type="text"
-                            value={editId || ""}
-                            readOnly
-                            className="input-readonly"
-                          />
-                        </div>
                         <div className="form-group">
                           <label htmlFor="nume">Nume:</label>
                           <select
@@ -198,7 +175,6 @@ const Setari = () => {
                         <div className="form-group">
                           <label htmlFor="start-date">Data Început:</label>
                           <input
-                            id="start-date"
                             type="date"
                             value={formData.period_start}
                             onChange={(e) => setFormData({ ...formData, period_start: e.target.value })}
@@ -239,7 +215,11 @@ const Setari = () => {
                       )}
                     </div>
 
-                    {submitError && <div className="submit-error">{submitError}</div>}
+                    {submitError && (
+                      <div className="info-card error">
+                        <i className="fas fa-exclamation-circle"></i> {submitError}
+                      </div>
+                    )}
                   </form>
                 </div>
               )}
@@ -248,7 +228,6 @@ const Setari = () => {
         </>
       )}
 
-      {/* Resetare DB pentru SEC și ADM */}
       {["ADM", "SEC"].includes(userRole) && (
         <div className="reset-db-container">
           <hr />

@@ -130,9 +130,18 @@ const Exam = () => {
                     key={index}
                     className="examene-row"
                     onClick={() => {
-                      console.log("Clicked exam:", exam);
+                      const normalizedExam = {
+                        ...exam,
+                        professor: (exam.professor && typeof exam.professor === 'object') ? exam.professor.name : (exam.professor || "-"),
+                        assistant: (exam.assistant && typeof exam.assistant === 'object') ? exam.assistant.name : (exam.assistant || "-"),
+                        room: (exam.room && typeof exam.room === 'object') ? exam.room.name : (exam.room || "-"),
+                        building: (exam.building && typeof exam.building === 'object') ? exam.building.name : (exam.building || "-"),
+                      };
+                    
+                      console.log("Trimitem la editare:", normalizedExam);
+                    
                       if (exam.exam_id) {
-                        navigate(`/exam/edit/${exam.exam_id}`, { state: { exam } });
+                        navigate(`/exam/edit/${exam.exam_id}`, { state: { exam: normalizedExam } });
                       } else {
                         console.warn("Exam fără ID:", exam);
                       }

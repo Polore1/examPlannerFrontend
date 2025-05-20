@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './UpdateExamForm.css';
+import UpdateExamForm from "./UpdateExamForm";
 
 const UpdateExamForm = ({ examId, token }) => {
   const [exam, setExam] = useState(null);
@@ -45,7 +46,7 @@ const UpdateExamForm = ({ examId, token }) => {
     } catch (err) {
       setError('Eroare la actualizarea examenului.');
     }
-  };
+  };  
 
   if (loading) return <p>Se încarcă datele...</p>;
   if (!exam) return <p>Nu s-au găsit detalii.</p>;

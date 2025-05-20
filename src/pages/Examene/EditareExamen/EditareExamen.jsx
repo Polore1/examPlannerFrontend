@@ -8,8 +8,7 @@ const EditareExamene = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [exam, setExam] = useState(location.state?.exam || null);
+  const [exam, setExam] = useState(null);
   const [form, setForm] = useState({});
   const [professors, setProfessors] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -21,27 +20,29 @@ const EditareExamene = () => {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const role = localStorage.getItem("user_role");
-
+  
     if (!token) return navigateWithError(navigate, "Autentificare necesară.", "Token lipsă");
     if (role !== "SEC") return navigateWithError(navigate, "Acces interzis", "Doar coordonatorii pot accesa.");
-
+  
     const fetchData = async () => {
       setLoading(true);
       try {
-        const examData = await getExamDetails(id, token);
         const [profs, roomList] = await Promise.all([
           fetchProfessors(token),
           fetchRooms(token),
         ]);
-
+  
         setProfessors(profs);
         setRooms(roomList);
+  
+        // Folosește exam din location.state dacă există
+        const examData = location.state?.exam || await getExamDetails(id, token);
         setExam(examData);
-
-        const foundRoom = roomList.find(r => r.room_id === examData.room_id);
-        const foundProfessor = profs.find(p => p.user_id === examData.professor_id);
-        const foundAssistant = profs.find(p => p.user_id === examData.assistant_id);
-
+  
+        const foundRoom = roomList.find(r => r.name === examData.room || r.room_id === examData.room_id);
+        const foundProfessor = profs.find(p => p.name === examData.professor || p.user_id === examData.professor_id);
+        const foundAssistant = profs.find(p => p.name === examData.assistant || p.user_id === examData.assistant_id);
+  
         fillFormFromExam(examData, foundRoom, foundProfessor, foundAssistant);
       } catch (err) {
         navigateWithError(navigate, err.message, "Eroare la încărcarea datelor");
@@ -49,22 +50,25 @@ const EditareExamene = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, [id, navigate]);
+  }, [id, navigate, location.state]); // 🔁 exam a fost scos
+  
+  
 
   const fillFormFromExam = (examData, foundRoom, foundProfessor, foundAssistant) => {
     const initialForm = {
       exam_date: examData.exam_date,
       start_time: examData.start_time,
       duration: examData.duration || "",
-      room_id: foundRoom ? examData.room_id : "",
-      professor_id: foundProfessor ? examData.professor_id : "",
-      assistant_id: foundAssistant ? examData.assistant_id : "",
+      room_id: foundRoom?.room_id || "",
+      professor_id: foundProfessor?.user_id || "",
+      assistant_id: foundAssistant?.user_id || "",
       details: examData.details || ""
     };
     setForm(initialForm);
   };
+  
 
   const handleChange = (field, value) => {
     const numericFields = ["room_id", "assistant_id", "professor_id", "duration"];
@@ -131,7 +135,7 @@ const EditareExamene = () => {
       {successMessage && (
         <div className="success-message">
           <p>{successMessage}</p>
-          <button onClick={() => setSuccessMessage("")}>Închide</button>
+          <button onClick={() => setSuccessMessage("")}>X</button>
         </div>
       )}
 
@@ -222,7 +226,7 @@ const EditareExamene = () => {
       <div className="button-container-centered">
         <button className="back-button small" onClick={() => navigate("/exam/all")}>Înapoi</button>
         <button
-          className="save-button small"
+          className="save-button"
           onClick={handleSubmit}
           disabled={saving}
         >

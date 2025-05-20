@@ -54,7 +54,7 @@ function App() {
         <Route path="/exam/by-status" element={<ExameneInAsteptare />} />
         <Route path="/exam/propose" element={<PropuneExamen />} />
         <Route path="/exam/group" element={<ExameneGrupa />} />
-        <Route path="/exam/:exam_id/update-date" element ={<ReprogramareExamene />} />
+        <Route path="/exam/:exam_id/update-date" element ={<ExameneGrupa />} />
 
         {/* Setări */}
         <Route path="/settings" element={<Setari />} />

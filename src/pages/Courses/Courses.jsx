@@ -11,6 +11,8 @@ const Courses = () => {
   const [userRole, setUserRole] = useState("");
   const [savingCourseId, setSavingCourseId] = useState(null);
 
+  const [filterYear, setFilterYear] = useState("Toate");
+  const [filterExamination, setFilterExamination] = useState("Toate");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,30 @@ const Courses = () => {
         navigateWithError(navigate, err.message, "Eroare la încărcarea cursurilor");
       });
   }, []);
+
+  useEffect(() => {
+    let filtered = courses;
+
+    if (filterYear !== "Toate") {
+      filtered = filtered.filter(c => String(c.study_year) === filterYear);
+    }
+
+    if (filterExamination !== "Toate") {
+      filtered = filtered.filter(c => c.examination_method === filterExamination);
+    }
+
+    setFilteredCourses(filtered);
+  }, [courses, filterYear, filterExamination]);
+
+  // Handlere pentru schimbarea filtrelor
+  const handleFilterYearChange = (e) => {
+    setFilterYear(e.target.value);
+  };
+
+  const handleFilterExaminationChange = (e) => {
+    setFilterExamination(e.target.value);
+  };
+
 
   const handleViewDetails = (courseId) => {
     navigate(`/courses/${courseId}`);
@@ -67,6 +93,36 @@ const Courses = () => {
             <span className="course-count">{filteredCourses.length} cursuri</span>
           </div>
 
+          {/* Filtre statice, doar UI */}
+          {userRole === "SEC" && (
+            <div className="filters-container">
+              <div>
+                <label htmlFor="filter-year">An studiu</label>
+                <select id="filter-year" value={filterYear} onChange={handleFilterYearChange}>
+               
+                  <option>Toate</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="filter-examination">Examinare</label>
+                <select
+                id="filter-examination"
+                value={filterExamination}
+                onChange={handleFilterExaminationChange}
+              >
+                  <option>Toate</option>
+                  <option>EXAMEN</option>
+                  <option>COLOCVIU</option>
+                </select>
+              </div>
+            </div>
+          
+          )}
           <div className="table-container">
             <table className="courses-table">
               <thead>

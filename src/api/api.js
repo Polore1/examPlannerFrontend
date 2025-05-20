@@ -83,8 +83,11 @@ export const getExamDetails = (examId, token) =>
   fetchWithAuth(`/exam/${examId}`, { method: "GET", token });
 
 export const updateExamDate = (examId, newDate, token) =>
-  fetchWithAuth(`/exam/${examId}/update-date`, { method: "PATCH", body: newDate, token });
-
+  fetchWithAuth(`/exam/${examId}/update-date`, {
+    method: "PATCH",
+    body: { exam_date: newDate },
+    token
+  });
 
 //
 // Examination Periods
@@ -119,8 +122,10 @@ export const updateUserDetails = (userId, data, token) =>
 
 export const addSecretary = (token, secretatyData)=> 
   fetchWithAuth('/users/secretary', {method: "POST", body: secretatyData,token})
-//TO DO: users/{user_id} DELETE
-//TO DO: users/secretary
+
+export const deleteProfessor = async (userId, token) =>
+  fetchWithAuth(`/users/${userId}`, {method:"DELETE", token});
+
 
 //
 // Rooms
